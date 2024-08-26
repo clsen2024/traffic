@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apdev
+  namespace: app
+  annotations:
+    alb.ingress.kubernetes.io/load-balancer-name: apdev-alb
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/target-node-labels: node=app
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/healthcheck-path: /healthcheck
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /v1/token
+            pathType: Exact
+            backend:
+              service:
+                name: token
+                port:
+                  number: 8080
+          - path: /v1/employee
+            pathType: Exact
+            backend:
+              service:
+                name: employee
+                port:
+                  number: 8080

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: token
+  namespace: app
+spec:
+  selector:
+    matchLabels:
+      app: token
+  template:
+    metadata:
+      labels:
+        app: token
+    spec:
+      terminationGracePeriodSeconds: 60
+      nodeSelector:
+        node: app
+      tolerations:
+      - key: node
+        operator: Equal
+        value: app
+        effect: NoSchedule
+      containers:
+      - name: token
+        image: 073813292468.dkr.ecr.ap-northeast-2.amazonaws.com/token:1
+        resources:
+          requests:
+            cpu: 1.2
+            memory: 300Mi
+          limits:
+            cpu: 1.2
+            memory: 300Mi
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee
+  namespace: app
+spec:
+  selector:
+    matchLabels:
+      app: employee
+  template:
+    metadata:
+      labels:
+        app: employee
+    spec:
+      terminationGracePeriodSeconds: 60
+      nodeSelector:
+        node: app
+      tolerations:
+      - key: node
+        operator: Equal
+        value: app
+        effect: NoSchedule
+      containers:
+      - name: employee
+        image: 073813292468.dkr.ecr.ap-northeast-2.amazonaws.com/employee:1
+        resources:
+          requests:
+            cpu: 1.2
+            memory: 300Mi
+          limits:
+            cpu: 1.2
+            memory: 300Mi
+        envFrom:
+          - secretRef:
+              name: employee
+        ports:
+        - containerPort: 8080
